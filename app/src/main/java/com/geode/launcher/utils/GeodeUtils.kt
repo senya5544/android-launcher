@@ -538,12 +538,15 @@ object GeodeUtils {
     external fun setNextInputTimestamp(timestamp: Long)
 
     private external fun bleScanCallbackFun(callbackType: Int, result: ScanResult)
-
-    @JvmStatic
-    val bleScanCallbackObj: ScanCallback = object : ScanCallback() {
+    private val bleScanCallbackObj: ScanCallback = object : ScanCallback() {
         override fun onScanResult(callbackType: Int, result: ScanResult) {
             super.onScanResult(callbackType, result)
             bleScanCallbackFun(callbackType, result)
         }
+    }
+
+    @JvmStatic
+    fun getBleScanCallbackObj(): ScanCallback {
+        return bleScanCallbackObj
     }
 }
