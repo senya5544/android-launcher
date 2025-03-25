@@ -580,6 +580,7 @@ object GeodeUtils {
     @JvmStatic
     fun bleRequestBluetoothEnable() {
         val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-        startActivity(enableBtIntent, REQUEST_ENABLE_BT);
+        val context = activity.get()!!
+        context.startActivity(enableBtIntent);
     }
 }
