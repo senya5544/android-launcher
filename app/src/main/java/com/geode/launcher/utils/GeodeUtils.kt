@@ -548,12 +548,10 @@ object GeodeUtils {
         override fun onScanResult(callbackType: Int, result: ScanResult) {
             super.onScanResult(callbackType, result)
             bleOnScanResultCallback(callbackType, result)
-            Toast.makeText(activity.get(), "on scan result", Toast.LENGTH_SHORT).show()
         }
         override fun onScanFailed(errorCode: Int) {
             super.onScanFailed(errorCode)
             bleOnScanFailedCallback(errorCode)
-            Toast.makeText(activity.get(), "on scan failed", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -561,16 +559,13 @@ object GeodeUtils {
     fun bleInit() {
         btAdapter = BluetoothAdapter.getDefaultAdapter()
         bleScanner = btAdapter.bluetoothLeScanner
-        Toast.makeText(activity.get(), "init", Toast.LENGTH_SHORT).show()
     }
     @JvmStatic
     fun bleStartScan() {
         bleScanner.startScan(bleScanCallback)
-        Toast.makeText(activity.get(), "start scan", Toast.LENGTH_SHORT).show()
     }
     @JvmStatic
     fun bleStopScan() {
         bleScanner.stopScan(bleScanCallback)
-        Toast.makeText(activity.get(), "stop scan", Toast.LENGTH_SHORT).show()
     }
 }
