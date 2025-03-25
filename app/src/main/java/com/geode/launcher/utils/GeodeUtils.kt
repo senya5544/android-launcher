@@ -17,6 +17,7 @@ import android.provider.DocumentsContract
 import android.provider.Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION
 import android.util.Log
 import android.widget.Toast
+import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.le.BluetoothLeScanner
 import android.bluetooth.le.ScanCallback
@@ -541,19 +542,13 @@ object GeodeUtils {
     
     private lateinit var btAdapter: BluetoothAdapter
     private lateinit var bleScanner: BluetoothLeScanner
-    private external fun bleOnScanResultCallback(callbackType: Int, result: ScanResult)
-    private external fun bleOnScanFailedCallback(errorCode: Int)
+    private var bleScannedDevices = mutableListOf<BluetoothDevice>()
 
     private val bleScanCallback: ScanCallback = object : ScanCallback() {
         override fun onScanResult(callbackType: Int, result: ScanResult) {
             super.onScanResult(callbackType, result)
-            bleOnScanResultCallback(callbackType, result)
             Log.i("BLEAPI", "onScanResult")
-        }
-        override fun onScanFailed(errorCode: Int) {
-            super.onScanFailed(errorCode)
-            bleOnScanFailedCallback(errorCode)
-            Log.i("BLEAPI", "onScanFailed")
+            bleScannedDevices.add(result.getDevice())
         }
     }
 
@@ -567,11 +562,21 @@ object GeodeUtils {
     fun bleStartScan() {
         bleScanner.startScan(bleScanCallback)
         Log.i("BLEAPI", "bleStartScan")
+        bleScannedDevices.clear()
     }
     @JvmStatic
     fun bleStopScan() {
         bleScanner.stopScan(bleScanCallback)
         Log.i("BLEAPI", "bleStopScan")
+    }
+    @JvmStatic
+    fun bleGetScannedDevices(): Mutable<BluetoothDevice> {
+        Log.i("BLEAPI", "leGetScannedDevices")
+        return toArray<BluetoothDevice>(bleScannedDevices)
+    }
+    @JvmStatic
+    fun bleClearScannedDevices() {
+        bleScannedDevices.clear()
     }
     @JvmStatic
     fun bleIsAdapterEnabled(): Boolean {
