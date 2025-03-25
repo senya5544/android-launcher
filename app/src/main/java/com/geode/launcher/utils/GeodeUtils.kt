@@ -548,10 +548,8 @@ object GeodeUtils {
     private val bleScanCallback: ScanCallback = object : ScanCallback() {
         override fun onScanResult(callbackType: Int, result: ScanResult) {
             super.onScanResult(callbackType, result)
-            Log.i("BLEAPI", "onScanResult")
-            if(callbackType == ScanSettings.CALLBACK_TYPE_FIRST_MATCH) {
-                bleScannedDevices.add(result.getDevice())
-            }
+            Log.i("callbackType=" + callbackType)
+            bleScannedDevices.add(result.getDevice())
         }
     }
 
