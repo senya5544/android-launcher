@@ -17,6 +17,8 @@ import android.provider.DocumentsContract
 import android.provider.Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION
 import android.util.Log
 import android.widget.Toast
+import android.bluetooth.le.ScanCallback
+import android.bluetooth.le.ScanResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.Keep
@@ -534,4 +536,14 @@ object GeodeUtils {
 
     // represents the timestamp of the next input callback, in nanoseconds (most events don't send it, but it's there)
     external fun setNextInputTimestamp(timestamp: Long)
+
+    private external fun bleScanCallbackFun(callbackType: Int, result: ScanResult)
+
+    @JvmStatic
+    val bleScanCallbackObj: ScanCallback = object : ScanCallback() {
+        override fun onScanResult(callbackType: Int, result: ScanResult) {
+            super.onScanResult(callbackType, result)
+            bleScanCallbackFun(callbackType, result)
+        }
+    }
 }
