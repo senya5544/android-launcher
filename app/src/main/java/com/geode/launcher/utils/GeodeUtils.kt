@@ -544,18 +544,7 @@ object GeodeUtils {
     private external fun bleOnScanResultCallback(callbackType: Int, result: ScanResult)
     private external fun bleOnScanFailedCallback(errorCode: Int)
 
-    private val bleScanCallback: ScanCallback = object : ScanCallback() {
-        override fun onScanResult(callbackType: Int, result: ScanResult) {
-            super.onScanResult(callbackType, result)
-            bleOnScanResultCallback(callbackType, result)
-            Log.i("BLEAPI", "onScanResult")
-        }
-        override fun onScanFailed(errorCode: Int) {
-            super.onScanFailed(errorCode)
-            bleOnScanFailedCallback(errorCode)
-            Log.i("BLEAPI", "onScanFailed")
-        }
-    }
+    private lateinit var bleScanCallback: ScanCallback
 
     @JvmStatic
     fun bleInit() {
@@ -565,6 +554,18 @@ object GeodeUtils {
     }
     @JvmStatic
     fun bleStartScan() {
+        bleScanCallback = object : ScanCallback() {
+            override fun onScanResult(callbackType: Int, result: ScanResult) {
+                super.onScanResult(callbackType, result)
+                bleOnScanResultCallback(callbackType, result)
+                Log.i("BLEAPI", "onScanResult")
+            }
+            override fun onScanFailed(errorCode: Int) {
+                super.onScanFailed(errorCode)
+                bleOnScanFailedCallback(errorCode)
+                Log.i("BLEAPI", "onScanFailed")
+            }
+        }
         bleScanner.startScan(bleScanCallback)
         Log.i("BLEAPI", "bleStartScan")
     }
