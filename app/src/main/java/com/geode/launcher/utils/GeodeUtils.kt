@@ -543,14 +543,14 @@ object GeodeUtils {
     
     private lateinit var btAdapter: BluetoothAdapter
     private lateinit var bleScanner: BluetoothLeScanner
-    private var bleScannedDevices = mutableListOf<BluetoothDevice>()
+    private var bleScanResults = mutableListOf<ScanResult>()
     private var bleScannedDevicesHashes = mutableListOf<Int>()
 
     private val bleScanCallback: ScanCallback = object : ScanCallback() {
         override fun onScanResult(callbackType: Int, result: ScanResult) {
             super.onScanResult(callbackType, result)
             if(result.getDevice().hashCode() !in bleScannedDevicesHashes) {
-                bleScannedDevices.add(result.getDevice())
+                bleScanResults.add(result)
                 bleScannedDevicesHashes.add(result.getDevice().hashCode())
             }
         }
@@ -563,7 +563,7 @@ object GeodeUtils {
     }
     @JvmStatic
     fun bleStartScan() {
-        bleScannedDevices.clear()
+        bleScanResults.clear()
         bleScannedDevicesHashes.clear()
         bleScanner.startScan(bleScanCallback)
     }
@@ -572,12 +572,12 @@ object GeodeUtils {
         bleScanner.stopScan(bleScanCallback)
     }
     @JvmStatic
-    fun bleGetScannedDevices(): Array<BluetoothDevice> {
-        return bleScannedDevices.toTypedArray()
+    fun bleGetScanResults(): Array<ScanResult> {
+        return bleScanResults.toTypedArray()
     }
     @JvmStatic
-    fun bleClearScannedDevices() {
-        bleScannedDevices.clear()
+    fun bleClearScanResults() {
+        bleScanResults.clear()
         bleScannedDevicesHashes.clear()
     }
     @JvmStatic
