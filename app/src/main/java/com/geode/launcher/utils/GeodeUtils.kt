@@ -548,7 +548,9 @@ object GeodeUtils {
         override fun onScanResult(callbackType: Int, result: ScanResult) {
             super.onScanResult(callbackType, result)
             Log.i("BLEAPI", "onScanResult")
-            bleScannedDevices.add(result.getDevice())
+            if(callbackType == 2) { // first match
+                bleScannedDevices.add(result.getDevice())
+            }
         }
     }
 
