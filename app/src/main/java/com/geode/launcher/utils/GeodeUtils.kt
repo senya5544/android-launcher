@@ -548,10 +548,12 @@ object GeodeUtils {
         override fun onScanResult(callbackType: Int, result: ScanResult) {
             super.onScanResult(callbackType, result)
             bleOnScanResultCallback(callbackType, result)
+            Log.i("BLEAPI", "onScanResult")
         }
         override fun onScanFailed(errorCode: Int) {
             super.onScanFailed(errorCode)
             bleOnScanFailedCallback(errorCode)
+            Log.i("BLEAPI", "onScanFailed")
         }
     }
 
@@ -559,13 +561,16 @@ object GeodeUtils {
     fun bleInit() {
         btAdapter = BluetoothAdapter.getDefaultAdapter()
         bleScanner = btAdapter.bluetoothLeScanner
+        Log.i("BLEAPI", "bleInit")
     }
     @JvmStatic
     fun bleStartScan() {
         bleScanner.startScan(bleScanCallback)
+        Log.i("BLEAPI", "bleStartScan")
     }
     @JvmStatic
     fun bleStopScan() {
         bleScanner.stopScan(bleScanCallback)
+        Log.i("BLEAPI", "bleStopScan")
     }
 }
