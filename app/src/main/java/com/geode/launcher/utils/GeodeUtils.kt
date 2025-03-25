@@ -17,6 +17,7 @@ import android.provider.DocumentsContract
 import android.provider.Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION
 import android.util.Log
 import android.widget.Toast
+import android.bluetooth.BluetoothAdapter
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
 import androidx.activity.result.ActivityResultLauncher
@@ -536,17 +537,33 @@ object GeodeUtils {
 
     // represents the timestamp of the next input callback, in nanoseconds (most events don't send it, but it's there)
     external fun setNextInputTimestamp(timestamp: Long)
+    
+    private val btAdapter, bleScanner
+    private external fun bleOnScanResultCallback(callbackType: Int, result: ScanResult)
+    private external fun bleOnScanFailedCallback(errorCode: Int)
 
-    private external fun bleScanCallbackFun(callbackType: Int, result: ScanResult)
-    private val bleScanCallbackObj: ScanCallback = object : ScanCallback() {
+    private val bleScanCallback: ScanCallback = object : ScanCallback() {
         override fun onScanResult(callbackType: Int, result: ScanResult) {
             super.onScanResult(callbackType, result)
-            bleScanCallbackFun(callbackType, result)
+            bleOnScanResultCallback(callbackType, result)
+        }
+        override fun onScanFailed(errorCode: Int) {
+            super.onScanFailed(errorCode)
+            bleOnScanFailedCallback(errorCode)
         }
     }
 
     @JvmStatic
-    fun getBleScanCallbackObj(): ScanCallback {
-        return bleScanCallbackObj
+    fun bleInit() {
+        btAdapter = BluetoothAdapter.getDefaultAdapter()
+        bleScanner = btAdapter.bluetoothLeScanner
+    }
+    @JvmStatic
+    fun bleStartScan() {
+        bleScanner.startScan(bleScanCallback)
+    }
+    @JvmStatic
+    fun bleStopScan() {
+        bleScanner.stopScan(bleScanCallback)
     }
 }
