@@ -544,12 +544,15 @@ object GeodeUtils {
     private lateinit var btAdapter: BluetoothAdapter
     private lateinit var bleScanner: BluetoothLeScanner
     private var bleScannedDevices = mutableListOf<BluetoothDevice>()
+    private var bleScannedDevicesHashes = mutableListOf<int>()
 
     private val bleScanCallback: ScanCallback = object : ScanCallback() {
         override fun onScanResult(callbackType: Int, result: ScanResult) {
             super.onScanResult(callbackType, result)
-            Log.i("BLEAPI", "callbackType=" + callbackType)
-            bleScannedDevices.add(result.getDevice())
+            if(result.getDevice().hashCode() !in bleScannedDevicesHashes) {
+                bleScannedDevices.add(result.getDevice())
+                bleScannedDevicesHashes.add(result.getDevice().hashCode())
+            }
         }
     }
 
@@ -557,27 +560,25 @@ object GeodeUtils {
     fun bleInit() {
         btAdapter = BluetoothAdapter.getDefaultAdapter()
         bleScanner = btAdapter.bluetoothLeScanner
-        Log.i("BLEAPI", "bleInit")
     }
     @JvmStatic
     fun bleStartScan() {
-        bleScanner.startScan(bleScanCallback)
-        Log.i("BLEAPI", "bleStartScan")
         bleScannedDevices.clear()
+        bleScannedDevicesHashes.clear()
+        bleScanner.startScan(bleScanCallback)
     }
     @JvmStatic
     fun bleStopScan() {
         bleScanner.stopScan(bleScanCallback)
-        Log.i("BLEAPI", "bleStopScan")
     }
     @JvmStatic
     fun bleGetScannedDevices(): Array<BluetoothDevice> {
-        Log.i("BLEAPI", "leGetScannedDevices")
         return bleScannedDevices.toTypedArray()
     }
     @JvmStatic
     fun bleClearScannedDevices() {
         bleScannedDevices.clear()
+        bleScannedDevicesHashes.clear()
     }
     @JvmStatic
     fun bleIsAdapterEnabled(): Boolean {
