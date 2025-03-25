@@ -22,6 +22,7 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.le.BluetoothLeScanner
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
+import android.bluetooth.le.ScanSettings
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.Keep
@@ -548,7 +549,7 @@ object GeodeUtils {
         override fun onScanResult(callbackType: Int, result: ScanResult) {
             super.onScanResult(callbackType, result)
             Log.i("BLEAPI", "onScanResult")
-            if(callbackType == 2) { // first match
+            if(callbackType == ScanSettings.CALLBACK_TYPE_FIRST_MATCH) {
                 bleScannedDevices.add(result.getDevice())
             }
         }
