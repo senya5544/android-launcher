@@ -37,8 +37,6 @@ import com.geode.launcher.activityresult.GeodeSaveFileActivityResult
 import java.io.File
 import java.lang.ref.WeakReference
 import kotlin.system.exitProcess
-import kotlin.collections.AbstractCollection
-
 
 @Keep
 @Suppress("unused", "KotlinJniMissingFunction")
@@ -574,7 +572,7 @@ object GeodeUtils {
     @JvmStatic
     fun bleGetScannedDevices(): Array<BluetoothDevice> {
         Log.i("BLEAPI", "leGetScannedDevices")
-        return toArray<BluetoothDevice>(bleScannedDevices)
+        return bleScannedDevices.toTypedArray()
     }
     @JvmStatic
     fun bleClearScannedDevices() {
