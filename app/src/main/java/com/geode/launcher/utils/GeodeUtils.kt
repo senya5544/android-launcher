@@ -573,4 +573,13 @@ object GeodeUtils {
         bleScanner.stopScan(bleScanCallback)
         Log.i("BLEAPI", "bleStopScan")
     }
+    @JvmStatic
+    fun bleIsAdapterEnabled(): Boolean {
+        return btAdapter.isEnabled
+    }
+    @JvmStatic
+    fun bleRequestBluetoothEnable() {
+        val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+        startActivity(enableBtIntent, REQUEST_ENABLE_BT);
+    }
 }
