@@ -539,8 +539,8 @@ object GeodeUtils {
     // represents the timestamp of the next input callback, in nanoseconds (most events don't send it, but it's there)
     external fun setNextInputTimestamp(timestamp: Long)
     
-    private var btAdapter: BluetoothAdapter? = null
-    private var bleScanner: BluetoothLeScanner? = null
+    private lateinit var btAdapter: BluetoothAdapter
+    private lateinit var bleScanner: BluetoothLeScanner
     private external fun bleOnScanResultCallback(callbackType: Int, result: ScanResult)
     private external fun bleOnScanFailedCallback(errorCode: Int)
 
