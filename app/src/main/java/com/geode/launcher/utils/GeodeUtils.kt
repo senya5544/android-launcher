@@ -599,7 +599,7 @@ object GeodeUtils {
 
     // ---==== CONNECTING ====--- //
     @JvmStatic
-    fun bleConnect(device: BluetoothDevice) {
+    fun bleConnect(device: BluetoothDevice): BluetoothGatt {
         val context = activity.get()!!
         return device.connectGatt(context, false, bleGattCallback)
     }
