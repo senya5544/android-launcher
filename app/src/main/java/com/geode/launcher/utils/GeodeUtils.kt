@@ -599,7 +599,7 @@ object GeodeUtils {
 
     // ---==== CONNECTING ====--- //
     @JvmStatic
-    fun bleGetDevice(String address): BluetoothDevice {
+    fun bleGetDevice(address: String): BluetoothDevice {
         return btAdapter.getRemoteLeDevice(address, BluetoothDevice.ADDRESS_TYPE_RANDOM)
     }
     @JvmStatic
