@@ -22,7 +22,8 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.le.BluetoothLeScanner
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
-import android.bluetooth.le.ScanSettings
+import android.bluetooth.BluetoothGatt
+import android.bluetooth.BluetoothGattCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.Keep
@@ -545,6 +546,9 @@ object GeodeUtils {
     private lateinit var bleScanner: BluetoothLeScanner
     private var bleScanResults = mutableListOf<ScanResult>()
     private var bleScannedDevicesHashes = mutableListOf<Int>()
+    private lateinit var bleConnectedGatt: BluetoothGatt
+    private var bleConnectionState: Int = 0
+    private var bleServiceDiscoveryStatus: Int = 0
 
     private val bleScanCallback: ScanCallback = object : ScanCallback() {
         override fun onScanResult(callbackType: Int, result: ScanResult) {
@@ -556,11 +560,22 @@ object GeodeUtils {
         }
     }
 
+    private val bleGattCallback: BluetoothGattCallback = object : BluetoothGattCallback() {
+        override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, state: Int) {
+            bleConnectionState = state
+        }
+        override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
+            bleServiceDiscoveryStatus = status
+        }
+    }
+
     @JvmStatic
     fun bleInit() {
         btAdapter = BluetoothAdapter.getDefaultAdapter()
         bleScanner = btAdapter.bluetoothLeScanner
     }
+
+    // ---==== SCANNING ====--- //
     @JvmStatic
     fun bleStartScan() {
         bleScanResults.clear()
@@ -580,6 +595,25 @@ object GeodeUtils {
         bleScanResults.clear()
         bleScannedDevicesHashes.clear()
     }
+    // ---==================--- //
+
+    // ---==== CONNECTING ====--- //
+    @JvmStatic
+    fun bleConnect(device: BluetoothDevice) {
+        val context = activity.get()!!
+        return device.connectGatt(context, false, bleGattCallback)
+    }
+    @JvmStatic
+    fun bleGetConnectionState(): Int {
+        return bleConnectionState
+    }
+    @JvmStatic
+    fun bleGetServiceDiscoveryStatus(): Int {
+        return bleServiceDiscoveryStatus
+    }
+    // other functions like reading characteristics and disconnecting are called directly via jni
+    // ---====================--- //
+
     @JvmStatic
     fun bleIsAdapterEnabled(): Boolean {
         return btAdapter.isEnabled
