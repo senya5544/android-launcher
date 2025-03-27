@@ -604,7 +604,7 @@ object GeodeUtils {
     }
     @JvmStatic
     fun bleConnect(device: BluetoothDevice) {
-        bleConnectedGatt = device.connectGatt(activity.applicationContext, false, bleGattCallback)
+        bleConnectedGatt = device.connectGatt(activity.get(), false, bleGattCallback)
     }
     @JvmStatic
     fun bleGetConnectionState(): Int {
