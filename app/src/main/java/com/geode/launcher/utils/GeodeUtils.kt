@@ -603,19 +603,22 @@ object GeodeUtils {
         return btAdapter.getRemoteLeDevice(address, BluetoothDevice.ADDRESS_TYPE_RANDOM)
     }
     @JvmStatic
-    fun bleConnect(device: BluetoothDevice): BluetoothGatt {
+    fun bleConnect(device: BluetoothDevice) {
         val context = activity.get()!!
-        return device.connectGatt(context, false, bleGattCallback)
+        bleConnectedGatt = device.connectGatt(context, false, bleGattCallback)
     }
     @JvmStatic
     fun bleGetConnectionState(): Int {
         return bleConnectionState
     }
     @JvmStatic
+    fun bleGetConnectedGatt(): BluetoothGatt {
+        return bleConnectedGatt
+    }
+    @JvmStatic
     fun bleGetServiceDiscoveryStatus(): Int {
         return bleServiceDiscoveryStatus
     }
-    // other functions like reading characteristics and disconnecting are called directly via jni
     // ---====================--- //
 
     @JvmStatic
