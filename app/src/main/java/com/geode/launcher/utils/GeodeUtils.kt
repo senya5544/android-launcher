@@ -548,7 +548,7 @@ object GeodeUtils {
     private var bleScannedDevicesHashes = mutableListOf<Int>()
     private lateinit var bleConnectedGatt: BluetoothGatt
     private var bleConnectionState: Int = 0
-    private var bleServiceDiscoveryStatus: Int = 0
+    private var bleServiceDiscoveryStatus: Int = 1
 
     private val bleScanCallback: ScanCallback = object : ScanCallback() {
         override fun onScanResult(callbackType: Int, result: ScanResult) {
