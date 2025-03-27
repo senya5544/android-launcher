@@ -24,6 +24,8 @@ import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
 import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCallback
+import android.bluetooth.BluetoothGattService
+import android.bluetooth.BluetoothGattCharacteristic
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.Keep
@@ -549,6 +551,8 @@ object GeodeUtils {
     private lateinit var bleConnectedGatt: BluetoothGatt
     private var bleConnectionState: Int = 0
     private var bleServiceDiscoveryStatus: Int = 1
+    private var bleCharacteristicReadStatus: Int = 1
+    private var bleCharacteristicReadValue: ByteArray
 
     private val bleScanCallback: ScanCallback = object : ScanCallback() {
         override fun onScanResult(callbackType: Int, result: ScanResult) {
@@ -566,6 +570,10 @@ object GeodeUtils {
         }
         override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
             bleServiceDiscoveryStatus = status
+        }
+        override fun onCharacteristicRead(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray, status: Int) {
+            bleCharacteristicReadStatus = status
+            bleCharacteristicReadValue = value
         }
     }
 
@@ -604,6 +612,7 @@ object GeodeUtils {
     }
     @JvmStatic
     fun bleConnect(device: BluetoothDevice): Boolean {
+        bleConnectionState = 0
         activity.get()?.apply {
             bleConnectedGatt = device.connectGatt(activity.get(), false, bleGattCallback)
             return true
@@ -618,11 +627,35 @@ object GeodeUtils {
     fun bleGetConnectedGatt(): BluetoothGatt {
         return bleConnectedGatt
     }
+    // ---====================--- //
+
+    // ---==== READING ====--- //
     @JvmStatic
     fun bleGetServiceDiscoveryStatus(): Int {
         return bleServiceDiscoveryStatus
     }
-    // ---====================--- //
+    @JvmStatic
+    fun bleGetCharacteristicReadStatus(): Int {
+        return bleCharacteristicReadStatus
+    }
+    @JvmStatic
+    fun bleGetCharacteristicReadValue(): ByteArray {
+        return bleCharacteristicReadValue
+    }
+
+    @JvmStatic
+    fun bleResetServiceDiscoveryStatus() {
+        bleServiceDiscoveryStatus = 1
+    }
+    @JvmStatic
+    fun bleResetCharacteristicReadStatus() {
+        bleCharacteristicReadStatus = 1
+    }
+    @JvmStatic
+    fun bleResetCharacteristicReadValue() {
+        bleCharacteristicReadValue = null
+    }
+    // ---=================--- //
 
     @JvmStatic
     fun bleIsAdapterEnabled(): Boolean {
