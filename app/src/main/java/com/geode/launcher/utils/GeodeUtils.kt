@@ -603,8 +603,12 @@ object GeodeUtils {
         return btAdapter.getRemoteLeDevice(address, BluetoothDevice.ADDRESS_TYPE_RANDOM)
     }
     @JvmStatic
-    fun bleConnect(device: BluetoothDevice) {
-        bleConnectedGatt = device.connectGatt(activity.get(), false, bleGattCallback)
+    fun bleConnect(device: BluetoothDevice): Boolean {
+        activity.get()?.apply {
+            bleConnectedGatt = device.connectGatt(activity.get(), false, bleGattCallback)
+            return true
+        }
+        return false
     }
     @JvmStatic
     fun bleGetConnectionState(): Int {
