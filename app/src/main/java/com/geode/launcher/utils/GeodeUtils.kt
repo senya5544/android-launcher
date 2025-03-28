@@ -547,34 +547,36 @@ object GeodeUtils {
     
     private lateinit var btAdapter: BluetoothAdapter
     private lateinit var bleScanner: BluetoothLeScanner
-    private var bleScanResults = mutableListOf<ScanResult>()
     private var bleScannedDevicesHashes = mutableListOf<Int>()
-    private lateinit var bleConnectedGatt: BluetoothGatt
-    private var bleConnectionState: Int = 0
-    private var bleServiceDiscoveryStatus: Int = 1
-    private var bleCharacteristicReadStatus: Int = 1
-    private var bleCharacteristicReadValue: ByteArray = byteArrayOf()
+
+    private external fun bleOnScanResultCallback(result: ScanResult)
+    private external fun bleOnConnectionStateChangeCallback(gatt: BluetoothGatt?, status: Int, state: Int)
+    private external fun bleOnServicesDiscoveredCallback(gatt: BluetoothGatt, status: Int)
+    private external fun bleOnCharacteristicReadCallback(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray, status: Int)
+    private external fun bleOnCharacteristicChangedCallback(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray)
 
     private val bleScanCallback: ScanCallback = object : ScanCallback() {
         override fun onScanResult(callbackType: Int, result: ScanResult) {
             super.onScanResult(callbackType, result)
             if(result.getDevice().hashCode() !in bleScannedDevicesHashes) {
-                bleScanResults.add(result)
                 bleScannedDevicesHashes.add(result.getDevice().hashCode())
+                bleOnScanResultCallback(result)
             }
         }
     }
 
     private val bleGattCallback: BluetoothGattCallback = object : BluetoothGattCallback() {
         override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, state: Int) {
-            bleConnectionState = state
+            bleOnConnectionStateChangeCallback(gatt, status, state)
         }
         override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
-            bleServiceDiscoveryStatus = status
+            bleOnServicesDiscoveredCallback(gatt, status)
         }
         override fun onCharacteristicRead(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray, status: Int) {
-            bleCharacteristicReadStatus = status
-            bleCharacteristicReadValue = value
+            bleOnCharacteristicReadCallback(gatt, characteristic, value, status)
+        }
+        override fun onCharacteristicChanged(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray) {
+            bleOnCharacteristicChangedCallback(gatt, characteristic, value)
         }
     }
 
@@ -584,89 +586,26 @@ object GeodeUtils {
         bleScanner = btAdapter.bluetoothLeScanner
     }
 
-    // ---==== SCANNING ====--- //
     @JvmStatic
     fun bleStartScan() {
-        bleScanResults.clear()
         bleScannedDevicesHashes.clear()
         bleScanner.startScan(bleScanCallback)
     }
     @JvmStatic
     fun bleStopScan() {
         bleScanner.stopScan(bleScanCallback)
-    }
-    @JvmStatic
-    fun bleGetScanResults(): Array<ScanResult> {
-        return bleScanResults.toTypedArray()
-    }
-    @JvmStatic
-    fun bleClearScanResults() {
-        bleScanResults.clear()
         bleScannedDevicesHashes.clear()
     }
-    // ---==================--- //
 
-    // ---==== CONNECTING ====--- //
-    @JvmStatic
-    fun bleGetDevice(address: String): BluetoothDevice {
-        return btAdapter.getRemoteLeDevice(address, BluetoothDevice.ADDRESS_TYPE_RANDOM)
-    }
     @JvmStatic
     fun bleConnect(device: BluetoothDevice): Boolean {
-        bleConnectionState = 0
         activity.get()?.apply {
-            bleConnectedGatt = device.connectGatt(activity.get(), false, bleGattCallback)
+            device.connectGatt(activity.get(), false, bleGattCallback)
             return true
         }
         return false
     }
-    @JvmStatic
-    fun bleGetConnectionState(): Int {
-        return bleConnectionState
-    }
-    @JvmStatic
-    fun bleGetConnectedGatt(): BluetoothGatt {
-        return bleConnectedGatt
-    }
-    // ---====================--- //
 
-    // ---==== READING ====--- //
-    @JvmStatic
-    fun bleGetServiceDiscoveryStatus(): Int {
-        return bleServiceDiscoveryStatus
-    }
-
-    @JvmStatic
-    fun bleReadCharacteristic(service_uuid: String, characteristic_uuid: String): Boolean {
-        return bleConnectedGatt.readCharacteristic(bleConnectedGatt.getService(UUID.fromString(service_uuid)).getCharacteristic(UUID.fromString(characteristic_uuid)))
-    }
-    @JvmStatic
-    fun bleGetCharacteristicReadStatus(): Int {
-        return bleCharacteristicReadStatus
-    }
-    @JvmStatic
-    fun bleGetCharacteristicReadValue(): ByteArray {
-        return bleCharacteristicReadValue
-    }
-
-    @JvmStatic
-    fun bleResetServiceDiscoveryStatus() {
-        bleServiceDiscoveryStatus = 1
-    }
-    @JvmStatic
-    fun bleResetCharacteristicReadStatus() {
-        bleCharacteristicReadStatus = 1
-    }
-    @JvmStatic
-    fun bleResetCharacteristicReadValue() {
-        bleCharacteristicReadValue = byteArrayOf()
-    }
-    // ---=================--- //
-
-    @JvmStatic
-    fun bleIsAdapterEnabled(): Boolean {
-        return btAdapter.isEnabled
-    }
     @JvmStatic
     fun bleRequestBluetoothEnable() {
         val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
