@@ -552,7 +552,7 @@ object GeodeUtils {
     private var bleConnectionState: Int = 0
     private var bleServiceDiscoveryStatus: Int = 1
     private var bleCharacteristicReadStatus: Int = 1
-    private var bleCharacteristicReadValue: ByteArray
+    private var bleCharacteristicReadValue: ByteArray = byteArrayOf()
 
     private val bleScanCallback: ScanCallback = object : ScanCallback() {
         override fun onScanResult(callbackType: Int, result: ScanResult) {
@@ -653,7 +653,7 @@ object GeodeUtils {
     }
     @JvmStatic
     fun bleResetCharacteristicReadValue() {
-        bleCharacteristicReadValue = null
+        bleCharacteristicReadValue = byteArrayOf()
     }
     // ---=================--- //
 
