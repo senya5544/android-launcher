@@ -41,7 +41,7 @@ import com.geode.launcher.activityresult.GeodeSaveFileActivityResult
 import java.io.File
 import java.lang.ref.WeakReference
 import kotlin.system.exitProcess
-import kotlin.uuid
+import java.util.UUID
 
 @Keep
 @Suppress("unused", "KotlinJniMissingFunction")
@@ -638,7 +638,7 @@ object GeodeUtils {
 
     @JvmStatic
     fun bleReadCharacteristic(service_uuid: String, characteristic_uuid: String): Boolean {
-        return bleConnectedGatt.readCharacteristic(bleConnectedGatt.getService(Uuid.parse(service_uuid).toJavaUuid()).getCharacteristic(Uuid.parse(characteristic_uuid).toJavaUuid()))
+        return bleConnectedGatt.readCharacteristic(bleConnectedGatt.getService(UUID.fromString(service_uuid)).getCharacteristic(UUID.fromString(characteristic_uuid)))
     }
     @JvmStatic
     fun bleGetCharacteristicReadStatus(): Int {
