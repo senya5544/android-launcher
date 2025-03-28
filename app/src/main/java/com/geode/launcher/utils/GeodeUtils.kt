@@ -41,6 +41,7 @@ import com.geode.launcher.activityresult.GeodeSaveFileActivityResult
 import java.io.File
 import java.lang.ref.WeakReference
 import kotlin.system.exitProcess
+import kotlin.uuid
 
 @Keep
 @Suppress("unused", "KotlinJniMissingFunction")
