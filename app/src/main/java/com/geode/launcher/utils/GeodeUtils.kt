@@ -634,6 +634,12 @@ object GeodeUtils {
     fun bleGetServiceDiscoveryStatus(): Int {
         return bleServiceDiscoveryStatus
     }
+
+    @JvmStatic
+    fun bleReadCharacteristic(String service_uuid, String characteristic_uuid): Boolean {
+        val service = bleConnectedGatt.getService(UUID.fromString(service_uuid))
+        return bleConnectedGatt.readCharacteristic(service, service.getCharacteristic(UUID.fromString(characteristic_uuid)))
+    }
     @JvmStatic
     fun bleGetCharacteristicReadStatus(): Int {
         return bleCharacteristicReadStatus
