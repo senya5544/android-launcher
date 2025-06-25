@@ -17,7 +17,7 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.geode.launcher"
+        applicationId = "dev.senya5544.launcher"
         minSdk = 23
         targetSdk = 35
         versionCode = 22
