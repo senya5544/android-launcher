@@ -35,6 +35,16 @@ import java.io.File
 import java.lang.ref.WeakReference
 import kotlin.system.exitProcess
 
+import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.le.BluetoothLeScanner
+import android.bluetooth.le.ScanCallback
+import android.bluetooth.le.ScanResult
+import android.bluetooth.BluetoothGatt
+import android.bluetooth.BluetoothGattCallback
+import android.bluetooth.BluetoothGattService
+import android.bluetooth.BluetoothGattCharacteristic
+
 @Keep
 @Suppress("unused", "KotlinJniMissingFunction")
 object GeodeUtils {
@@ -584,4 +594,67 @@ object GeodeUtils {
      */
     external fun setNextInputTimestamp(timestamp: Long)
     external fun setNextInputTimestampInternal(timestamp: Long)
+
+
+    private lateinit var btAdapter: BluetoothAdapter
+    private lateinit var bleScanner: BluetoothLeScanner
+
+    private external fun bleOnScanResultCallback(result: ScanResult)
+    private external fun bleOnConnectionStateChangeCallback(gatt: BluetoothGatt?, status: Int, state: Int)
+    private external fun bleOnServicesDiscoveredCallback(gatt: BluetoothGatt, status: Int)
+    private external fun bleOnCharacteristicReadCallback(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray, status: Int)
+    private external fun bleOnCharacteristicChangedCallback(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray)
+
+    private val bleScanCallback: ScanCallback = object : ScanCallback() {
+        override fun onScanResult(callbackType: Int, result: ScanResult) {
+            super.onScanResult(callbackType, result)
+            bleOnScanResultCallback(result)
+        }
+    }
+
+    private val bleGattCallback: BluetoothGattCallback = object : BluetoothGattCallback() {
+        override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, state: Int) {
+            bleOnConnectionStateChangeCallback(gatt, status, state)
+        }
+        override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
+            bleOnServicesDiscoveredCallback(gatt, status)
+        }
+        override fun onCharacteristicRead(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray, status: Int) {
+            bleOnCharacteristicReadCallback(gatt, characteristic, value, status)
+        }
+        override fun onCharacteristicChanged(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray) {
+            bleOnCharacteristicChangedCallback(gatt, characteristic, value)
+        }
+    }
+
+    @JvmStatic
+    fun bleInit() {
+        btAdapter = BluetoothAdapter.getDefaultAdapter()
+        bleScanner = btAdapter.bluetoothLeScanner
+    }
+
+    @JvmStatic
+    fun bleStartScan() {
+        bleScanner.startScan(bleScanCallback)
+    }
+    @JvmStatic
+    fun bleStopScan() {
+        bleScanner.stopScan(bleScanCallback)
+    }
+
+    @JvmStatic
+    fun bleConnect(device: BluetoothDevice): Boolean {
+        activity.get()?.apply {
+            device.connectGatt(activity.get(), false, bleGattCallback)
+            return true
+        }
+        return false
+    }
+
+    @JvmStatic
+    fun bleRequestBluetoothEnable() {
+        val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+        val context = activity.get()!!
+        context.startActivity(enableBtIntent);
+    }
 }
